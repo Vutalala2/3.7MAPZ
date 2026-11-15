@@ -1,0 +1,119 @@
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct ListNode {
+    int val;
+    ListNode* next;
+
+    ListNode(int x) {
+        val = x;
+        next = nullptr;
+    }
+};
+
+// Об'єднання двох відсортованих списків
+ListNode* mergeTwoLists(ListNode* a, ListNode* b) {
+    if (a == nullptr) return b;
+    if (b == nullptr) return a;
+
+    if (a->val <= b->val) {
+        a->next = mergeTwoLists(a->next, b);
+        return a;
+    } else {
+        b->next = mergeTwoLists(a, b->next);
+        return b;
+    }
+}
+
+// Рекурсивне об'єднання k списків
+ListNode* mergeKLists(vector<ListNode*>& lists, int left, int right) {
+    if (left > right) {
+        return nullptr;
+    }
+
+    if (left == right) {
+        return lists[left];
+    }
+
+    int mid = left + (right - left) / 2;
+
+    ListNode* a = mergeKLists(lists, left, mid);
+    ListNode* b = mergeKLists(lists, mid + 1, right);
+
+    return mergeTwoLists(a, b);
+}
+
+// Створення списку
+ListNode* createList(int arr[], int index, int size) {
+    if (index == size) {
+        return nullptr;
+    }
+
+    ListNode* node = new ListNode(arr[index]);
+    node->next = createList(arr, index + 1, size);
+
+    return node;
+}
+
+// Виведення списку
+void printList(ListNode* head) {
+    if (head == nullptr) {
+        cout << endl;
+        return;
+    }
+
+    cout << head->val << " ";
+    printList(head->next);
+}
+
+// Очищення пам'яті
+void deleteList(ListNode* head) {
+    if (head == nullptr) {
+        return;
+    }
+
+    deleteList(head->next);
+    delete head;
+}
+
+// Перевірка прикладу
+void runExample(vector<ListNode*>& lists) {
+    ListNode* result = mergeKLists(lists, 0, (int)lists.size() - 1);
+
+    cout << "Result: ";
+    printList(result);
+
+    deleteList(result);
+}
+
+int main() {
+    // Приклад 1
+    int a1[] = {1, 4, 5};
+    int a2[] = {1, 3, 4};
+    int a3[] = {2, 6};
+
+    vector<ListNode*> lists1 = {
+        createList(a1, 0, 3),
+        createList(a2, 0, 3),
+        createList(a3, 0, 2)
+    };
+
+    cout << "Example 1: ";
+    runExample(lists1);
+
+    // Приклад 2
+    vector<ListNode*> lists2;
+
+    cout << "Example 2: ";
+    runExample(lists2);
+
+    // Приклад 3
+    vector<ListNode*> lists3 = {nullptr};
+
+    cout << "Example 3: ";
+    runExample(lists3);
+
+    return 0;
+}
